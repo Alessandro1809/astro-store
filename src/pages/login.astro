@@ -91,27 +91,37 @@ import AuthLayout from '@/layouts/AuthLayout.astro';
 <script>
   import {actions} from 'astro:actions';
   import Swal from 'sweetalert2';
+  
 
   const form = document.querySelector('form') as HTMLFormElement;
   const btnSubmit = document.querySelector('#btn-submit') as HTMLButtonElement;
   const bntGoogle = document.querySelector('#btn-google') as HTMLButtonElement;
 
+  const {signIn} = await import("auth-astro/client");
+
   
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     btnSubmit.setAttribute('disabled', 'disabled');
 
     const formData = new FormData(form);
 
-    const {error} = await actions.loginUser(formData);
+    const resp = await signIn('credentials',{
+    email:formData.get('email') as string,
+    password:formData.get('password') as string,
+    redirect:false
+    });
+
+    // const {error} = await actions.loginUser(formData);
 
     
 
-    if (error) {
+    if (resp) {
       Swal.fire({
         icon: 'error',
         title: 'Error al ingresar',
-        text: error.message,
+        text: 'Credenciales no son correctas',
         
       });
       btnSubmit.removeAttribute('disabled');
