@@ -1,6 +1,6 @@
 # Astro Store
 
-##Install
+## Install
 
 1. Clona el repo
 2.  `bun intall`
