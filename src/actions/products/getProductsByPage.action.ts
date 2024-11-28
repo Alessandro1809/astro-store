@@ -1,6 +1,7 @@
 
+import type { ProductWithImg } from '@/interfaces';
 import { defineAction } from 'astro:actions';
-import { count, db, eq, Product, ProductImage } from 'astro:db';
+import { count, db, eq, Product, ProductImage, sql } from 'astro:db';
 import { z } from 'astro:schema';
 
 export const getProductsByPage = defineAction({
@@ -19,22 +20,35 @@ export const getProductsByPage = defineAction({
             //Si no hay mas paginas se muestra un array vacio
             if (page > totalPages) {
                 return {
-                    products:[],
+                    products:[] as ProductWithImg[],
                     totalPages: totalPages,
                 }
                 
             }
 
-            const products = await db
-            .select()
-            .from(Product)
-            .innerJoin(ProductImage, eq(Product.id,ProductImage.productId))
-            .limit(limit)
-            .offset((page - 1) * limit);//offset es para paginacion tomado los siguientes resultados y el page - 1 es para que empiece en la pagina 1
+            //con rawquery
+            const productsQuery = sql`
+            select a.*,
+            ( select GROUP_CONCAT(image,',') from 
+              ( select * from ${ProductImage} where productId = a.id limit 2 )
+            ) as images
+            from ${Product} a
+            LIMIT ${limit} OFFSET ${(page - 1) * limit};
+            `
+            const {rows} = await db.run( productsQuery );
+             console.log(rows);
+             
+            //manera de hacer la paginacion con limit y offset
+            // const products = await db
+            // .select()
+            // .from(Product)
+            // .innerJoin(ProductImage, eq(Product.id,ProductImage.productId))
+            // .limit(limit)
+            // .offset((page - 1) * limit);//offset es para paginacion tomado los siguientes resultados y el page - 1 es para que empiece en la pagina 1
 
 
           return {
-            products,
+            products: rows as unknown as ProductWithImg[],
             totalPages
           }
           
