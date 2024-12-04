@@ -60,7 +60,9 @@ const { product, images} = data;
 
 
 <script>
-  import { CartCoookiesClient } from "@/utils/cart-cookies";
+  
+import { itemsIncart } from "@/store";
+import { CartCoookiesClient } from "@/utils/cart-cookies";
   const sizesElemnts = document.querySelectorAll('li');
 
   sizesElemnts.forEach((element) => {
@@ -98,18 +100,20 @@ const { product, images} = data;
         
       }
 
-      addToCartButton.disabled = true;
+      // addToCartButton.disabled = true;
 
-      CartCoookiesClient.addItem({
+      const cart = CartCoookiesClient.addItem({
          id: productInput.value,
          size,
          quantity
        
       });
+
       
+      itemsIncart.set(cart.length);
 
       //TODO: Cambiar cuando se agreguen los viewTransition
-      window.location.href = '/cart';
+      // window.location.href = '/cart';
 
     });
    
