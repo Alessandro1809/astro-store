@@ -1,10 +1,10 @@
 ---
 import MainLayout from "@/layouts/MainLayout.astro";
-import { actions } from "astro:actions";
+import {getProductById} from "@/actions";
 import ProductSlideShow from "@/components/products/ProductSlideShow.astro";
 const { slug } = Astro.params;
 
-const {data,error} = await Astro.callAction(actions.getProductById, slug as string);
+const {data,error} = await Astro.callAction(getProductById, slug as string);
 
 if (error) {
     return Astro.redirect('/404');
