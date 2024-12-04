@@ -46,7 +46,7 @@ const { product, images} = data;
         <button class="btn-quantity">+</button>
       </div>
 
-      <button class="mt-5 bg-blue-500 text-white p-3 w-full"
+      <button class="mt-5 bg-blue-500 text-white p-3 w-full disabled:bg-gray-500"
         >Añadir al carrito</button
       >
 
@@ -60,6 +60,7 @@ const { product, images} = data;
 
 
 <script>
+  import { CartCoookiesClient } from "@/utils/cart-cookies";
   const sizesElemnts = document.querySelectorAll('li');
 
   sizesElemnts.forEach((element) => {
@@ -99,12 +100,16 @@ const { product, images} = data;
 
       addToCartButton.disabled = true;
 
-      console.log({
-        productId: productInput.value,
-        size,
-        quantity
+      CartCoookiesClient.addItem({
+         id: productInput.value,
+         size,
+         quantity
+       
       });
       
+
+      //TODO: Cambiar cuando se agreguen los viewTransition
+      window.location.href = '/cart';
 
     });
    
