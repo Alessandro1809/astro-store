@@ -47,17 +47,21 @@ const fullImages = images.map(image => {
   <script>
     import Swiper from 'swiper';
     import {  Pagination } from 'swiper/modules';
-    const swiper = new Swiper('.swiper', {
-  // Optional parameters
-  direction: 'horizontal',
-  loop: true,
+    document.addEventListener('astro:page-load', () => {
+      const swiper = new Swiper('.swiper', {
+      // Optional parameters
+      direction: 'horizontal',
+      loop: true,
 
-  // If we need pagination
-  pagination: {
-    el: '.swiper-pagination',
-  },
- 
+      // If we need pagination
+      pagination: {
+        el: '.swiper-pagination',
+      },
+    
 
-  modules: [Pagination],
-});
+      modules: [Pagination],
+    });
+
+    })
+    
   </script>

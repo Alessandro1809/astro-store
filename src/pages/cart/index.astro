@@ -79,21 +79,26 @@ const total = products?.reduce((acc, product) => acc + product.price * product.q
 </MainLayout>
 
 <script>
+import { itemsIncart } from "@/store";
 import { CartCoookiesClient } from "@/utils";
+import {navigate} from "astro:transitions/client";
+document.addEventListener('astro:page-load', () => {
+  const btnRemove = document.querySelectorAll('.btn-remove') as NodeListOf<HTMLButtonElement>;
 
-
-    const btnRemove = document.querySelectorAll('.btn-remove') as NodeListOf<HTMLButtonElement>;
-
-    btnRemove.forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-            const target = e.target as HTMLButtonElement;
-            const productID = btn.dataset.id ?? '' as string;
-            const size = btn.dataset.size ?? '' as string;
-            
-            CartCoookiesClient.removeItem(productID, size);
-
-            window.location.reload();
-        })
+btnRemove.forEach((btn) => {
+    btn.addEventListener('click',async (e) => {
+        const target = e.target as HTMLButtonElement;
+        const productID = btn.dataset.id ?? '' as string;
+        const size = btn.dataset.size ?? '' as string;
+        
+       const cart = CartCoookiesClient.removeItem(productID, size);
+      
+       itemsIncart.set(cart.length);
+       await navigate('/cart');
     })
+})
+
+});
+ 
 
 </script>
