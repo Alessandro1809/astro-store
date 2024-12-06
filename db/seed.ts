@@ -12,7 +12,7 @@ export default async function seed() {
 	];
 
 	const johnDoe = {
-		id: UUID(),
+		id: 'ABC-123-JOHN',//UUID(),
 		name: 'John Doe',
 		email: 'M0x9F@example.com',
 		password: bcrypt.hashSync('password', 10),
@@ -21,7 +21,7 @@ export default async function seed() {
 	};
 
 	const janeDoe = {
-		id: UUID(),
+		id: 'ABC-123-JANE',//UUID(),
 		name: 'Jane Doe',
 		email: 'Fk9j0@example.com',		
 		password: bcrypt.hashSync('passwrd', 10),
@@ -49,7 +49,8 @@ export default async function seed() {
 			tags: p.tags.join(','),
 			title: p.title,
 			type: p.type,
-			user: johnDoe.id
+			user: johnDoe.id,
+			gender: p.gender
 		}
 
 		querys.push(db.insert(Product).values(product));

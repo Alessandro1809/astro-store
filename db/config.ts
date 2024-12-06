@@ -32,7 +32,7 @@ const Product = defineTable({
     tags:column.text(),
     title: column.text(),
     type:column.text(),
-
+    gender:column.text(),
     user: column.text({references:() => User.columns.id}),
   }
 })
