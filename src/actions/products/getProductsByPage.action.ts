@@ -38,6 +38,12 @@ export const getProductsByPage = defineAction({
             const {rows} = await db.run( productsQuery );
              console.log(rows);
              
+             const products = rows.map((product) => {
+               return {
+                 ...product,
+                 images: product.images ? product.images : 'no-image.png'
+               }
+             }) as unknown as ProductWithImg[];
             //manera de hacer la paginacion con limit y offset
             // const products = await db
             // .select()
@@ -48,7 +54,7 @@ export const getProductsByPage = defineAction({
 
 
           return {
-            products: rows as unknown as ProductWithImg[],
+            products: products, //rows as unknown as ProductWithImg[],
             totalPages
           }
           

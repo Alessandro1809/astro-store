@@ -1,5 +1,3 @@
-
-import type { CartItem } from '@/interfaces';
 import { defineAction } from 'astro:actions';
 import { db, eq, inArray, Product, ProductImage } from 'astro:db';
 import { z } from 'astro:schema';
