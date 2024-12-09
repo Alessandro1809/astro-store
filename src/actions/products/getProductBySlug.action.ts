@@ -40,8 +40,8 @@ export const getProductById = defineAction({
             const images = await db.select()
             .from(ProductImage)
             .where(eq(ProductImage.productId, product.id));
-
-          return {product, images:images.map(image => image.image)};
+            //.map(image => image.image)
+          return {product, images:images};
           
         }
       });

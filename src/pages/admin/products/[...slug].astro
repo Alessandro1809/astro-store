@@ -219,12 +219,13 @@ if (error) {
               type="file"
               accept="image/*"
               multiple
+              class="hidden"
             />
           </label>
         </div>
 
         <!-- Slideshow -->
-        <ProductSlideShow images={product.images} />
+        <ProductSlideShow images={product.images.map((img) => img.image)} />
 
         <table class="w-full border">
           <thead>
@@ -235,8 +236,8 @@ if (error) {
           </thead>
           <tbody>
             {
-              product.images.map((image) => (
-                <tr class="border">
+              product.images.map(({image,id}) => (
+                <tr class="border" id={id}>
                   <td class="flex justify-center">
                     <ProductImage
                       src={image}
@@ -245,7 +246,7 @@ if (error) {
                     />
                   </td>
                   <td class="text-center">
-                    <button class="btn-delete-image">X</button>
+                    <button type="button" data-id={id} class="btn-delete-image">X</button>
                   </td>
                 </tr>
               ))
@@ -305,7 +306,88 @@ if (error) {
       navigate(`/admin/products/${data.slug}`);
     });
 
+    //eliminacion de imagenes
+    const btnDeleteImage = document.querySelectorAll('.btn-delete-image');
+    btnDeleteImage.forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        const id = btn.getAttribute('data-id');
+        if (!id) return;
+
+        const {error} = await actions.deleteProductImg(id);
+
+        if (error) {
+          return alert(error.message);
+        }
+        const trId= `#${id}`;//se toma el id del tr
+        document.querySelector(trId)?.remove();//se remueve el elemento
+        
+      });
+    });
+    //Dragg and Drop
+
+    const lblSelectedfiles = document.querySelector('#lbl-selected-files') as HTMLParagraphElement;
+    const dropZone = document.querySelector('#drop-zone') as HTMLLabelElement ;
+    const fileInput = document.querySelector('#file-upload') as HTMLInputElement;
+
+    //bloquear comportamientos por defecto de drag and drop
+    const preventDefaults =(e:DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const hihgLight =(e: DragEvent)=>{
+      dropZone.classList.add('border-blue-500','bg-blue-50');
+    }
+    const unHihgLight =(e: DragEvent)=>{
+      dropZone.classList.remove('bg-blue-500','bg-blue-50');
+    }
+    //cuando se arrastra el archivo prevenir el comportamiento en todo el body
+    (['dragenter', 'dragover', 'dragleave', 'drop'] as const).forEach((eventName) => {
+      dropZone.addEventListener(eventName, preventDefaults);
+      document.body.addEventListener(eventName, preventDefaults);
+    });
+
+    (['dragenter', 'dragover'] as const).forEach((eventName) => {
+      dropZone.addEventListener(eventName, hihgLight);
+    });
+
+    (['dragleave', 'drop'] as const).forEach((eventName) => {
+      dropZone.addEventListener(eventName, unHihgLight);
+    });
+
+    const createFileList = ( files: File[]): FileList => {
+      const dataTransfer = new DataTransfer();
+
+      files.forEach((file) => {
+        dataTransfer.items.add(file);
+      });
+
+      return dataTransfer.files;
+    }
+    const handleFiles = (files: FileList) => {
+      const validFiles = Array.from(files).filter((file) => file.type.startsWith('image/'));
+
+      if (fileInput && validFiles.length > 0) {
+        fileInput.files = createFileList(validFiles);
+
+      
+      }else{
+        alert('Solo se pueden subir imagenes');
+      }
+
+      lblSelectedfiles.innerHTML = `<strong>${validFiles.length}</strong>  archivos seleccionados`;
+
+    }
+    //solo imagenes
+    dropZone.addEventListener('drop', async (e) => {
+      const files= e.dataTransfer?.files;
+      if (files) {
+        handleFiles(files)
+      }
+
+
+    });
     
+
     // fin del astro:load
   });
 </script>
