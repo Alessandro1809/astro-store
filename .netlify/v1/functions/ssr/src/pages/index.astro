@@ -1,0 +1,29 @@
+---
+import { ProductList } from '@/components';
+import Pagination from '@/components/shared/Pagination.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import {getProductsByPage} from '@/actions';
+
+const searchParams = Astro.url.searchParams;
+const pageParam = Number(searchParams.get("page") ?? 1);
+
+const {data,error} = await Astro.callAction(getProductsByPage,{page:pageParam});
+
+if (error) {
+  return Astro.redirect('/');
+}
+
+const {products, totalPages} =data;
+
+  if (data.products.length === 0) {
+    return Astro.redirect(`/?page=${totalPages}`);
+  }
+  
+---
+
+<MainLayout>
+  <h1 class="text-3xl pt-10 bg-gradient-to-tr from-green-400 to-green-900 bg-clip-text text-transparent w-96 mb-10">Productos disponibles</h1>
+
+  <ProductList products={products} client:load/>
+  <Pagination totalPages={totalPages}/>
+</MainLayout>

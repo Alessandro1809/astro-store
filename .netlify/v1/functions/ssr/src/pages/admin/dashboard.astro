@@ -1,0 +1,63 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro"
+
+import Pagination from '@/components/shared/Pagination.astro';
+import {getProductsByPage} from '@/actions';
+import { Formatter } from "@/utils";
+import ProductImage from "@/components/products/ProductImage.astro";
+
+const searchParams = Astro.url.searchParams;
+const pageParam = Number(searchParams.get("page") ?? 1);
+
+const {data,error} = await Astro.callAction(getProductsByPage,{page:pageParam});
+
+if (error) {
+  return Astro.redirect('/');
+}
+
+const {products, totalPages} =data;
+
+  
+---
+
+<MainLayout title="Dashboard" description="Admin Dashboard">
+    <h1>Dashboard</h1>
+    <p>Listado de productos</p>
+
+    <div class=" flex justify-end ">
+        <a class="bg-lime-300 hover:bg-lime-500 transition-all duration-300 text-black font-semibold p-2 rounded-md" href="/admin/products/new">
+            Nuevo producto
+        </a>
+    </div>
+    <table class="mt-5 w-full">
+        <thead class="bg-green-300 rounded-lg">
+            <tr class="">
+                
+                <th class="text-left">Title</th>
+                <th class="text-left">Price</th>
+                <th class="text-left">Image</th>
+                <th class="text-left">Inventario</th>
+            </tr>
+        </thead>
+        <tbody>
+            {
+                products.map((product) => (
+                    <tr>
+                      
+                        <td>
+                            <a class="hover:underline cursor-pointer" 
+                            href={`/admin/products/${product.slug}`}
+                           
+                            >{product.title}</a></td>
+                        <td>{Formatter.currency(product.price)}</td>
+                        <td><ProductImage src={product.images.split(',')[0]} className="w-16 h-16" alt={product.title} /></td>
+                        <td>
+                            {product.stock}
+                        </td>
+                    </tr>
+                ))
+            }
+        </tbody>
+    </table>
+    <Pagination totalPages={totalPages}/>
+</MainLayout>
